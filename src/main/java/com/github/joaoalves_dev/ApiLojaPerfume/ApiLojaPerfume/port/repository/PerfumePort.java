@@ -16,4 +16,6 @@ public interface PerfumePort {
     public ResponseEntity<Void> atualizaPerfume(String id, PerfumeDTO perfumeDTO);
 
     public ResponseEntity<Void> deletaPerfumeId(String id);
+
+    public ResponseEntity<PerfumeDTO> pesquisaComFiltro(String nome, String marca, String genero, Double volume);
 }

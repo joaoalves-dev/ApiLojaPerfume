@@ -1,8 +1,9 @@
-package com.github.joaoalves_dev.ApiLojaPerfume.ApiLojaPerfume.application.service;
+package com.github.joaoalves_dev.ApiLojaPerfume.ApiLojaPerfume.application.domain.service;
 
 import com.github.joaoalves_dev.ApiLojaPerfume.ApiLojaPerfume.adapter.dto.PerfumeDTO;
 import com.github.joaoalves_dev.ApiLojaPerfume.ApiLojaPerfume.adapter.mappers.PerfumeMapper;
 import com.github.joaoalves_dev.ApiLojaPerfume.ApiLojaPerfume.application.domain.model.Perfume;
+import com.github.joaoalves_dev.ApiLojaPerfume.ApiLojaPerfume.application.domain.validator.PerfumeValidator;
 import com.github.joaoalves_dev.ApiLojaPerfume.ApiLojaPerfume.port.repository.PerfumePort;
 import com.github.joaoalves_dev.ApiLojaPerfume.ApiLojaPerfume.port.repository.PerfumeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,9 @@ import java.util.stream.Collectors;
 public class PerfumeService implements PerfumePort {
 
     @Autowired
+    private PerfumeValidator validator;
+
+    @Autowired
     private PerfumeRepository repository;
 
     @Autowired
@@ -27,6 +31,7 @@ public class PerfumeService implements PerfumePort {
     @Override
     public ResponseEntity<Perfume> criaPerfume(PerfumeDTO perfumeDTO) {
         Perfume perfume = mapper.toEntity(perfumeDTO);
+        validator.validar(perfume);
         return new ResponseEntity(repository.save(perfume), HttpStatus.CREATED);
     }
 
@@ -82,5 +87,22 @@ public class PerfumeService implements PerfumePort {
 
         repository.deleteById(id);
         return new ResponseEntity("Perfume deletado com sucesso", HttpStatus.OK);
+    }
+
+    public ResponseEntity<PerfumeDTO> pesquisaComFiltro(String nome, String marca, String genero, Double volume) {
+
+        if (nome != null && volume != null) {
+            return repository.findByNomeAndVolume(nome, volume);
+        } else if (nome != null) {
+            return repository.findByNome(nome);
+        } else if (marca != null) {
+            return repository.findByMarca(marca);
+        }
+
+        List<PerfumeDTO> listaPerfumesDTOs = repository.findAll().stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
+
+        return new ResponseEntity(listaPerfumesDTOs, HttpStatus.OK);
     }
 }
