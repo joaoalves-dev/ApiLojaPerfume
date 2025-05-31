@@ -2,7 +2,6 @@ package com.github.joaoalves_dev.ApiLojaPerfume.ApiLojaPerfume.adapter.controlle
 
 import com.github.joaoalves_dev.ApiLojaPerfume.ApiLojaPerfume.adapter.dto.PerfumeDTO;
 import com.github.joaoalves_dev.ApiLojaPerfume.ApiLojaPerfume.application.domain.model.Perfume;
-import com.github.joaoalves_dev.ApiLojaPerfume.ApiLojaPerfume.application.service.PerfumeService;
 import com.github.joaoalves_dev.ApiLojaPerfume.ApiLojaPerfume.port.repository.PerfumePort;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,38 +12,33 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/perfume")
-public class PerfumeController implements PerfumePort {
+public class PerfumeController {
 
     @Autowired
-    private PerfumeService service;
+    private PerfumePort perfumePort;
 
-    @Override
     @PostMapping
     public ResponseEntity<Perfume> criaPerfume(@RequestBody @Valid PerfumeDTO perfumeDTO) {
-        return service.salvar(perfumeDTO);
+        return perfumePort.criaPerfume(perfumeDTO);
     }
 
-    @Override
     @GetMapping("/{id}")
     public ResponseEntity<PerfumeDTO> buscaPerfumeId(@PathVariable String id) {
-        return service.buscaPerfumeId(id);
+        return perfumePort.buscaPerfumeId(id);
     }
 
-    @Override
     @GetMapping
     public ResponseEntity<List<PerfumeDTO>> buscaTodosPerfumes() {
-        return service.buscaPerfumes();
+        return perfumePort.buscaTodosPerfumes();
     }
 
-    @Override
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletaPerfumeId(@PathVariable String id) {
-        return service.deletaPerfume(id);
+        return perfumePort.deletaPerfumeId(id);
     }
 
-    @Override
     @PatchMapping("/{id}")
     public ResponseEntity<Void> atualizaPerfume(@PathVariable("id") String id, @RequestBody @Valid PerfumeDTO perfumeDTO) {
-        return service.atualizaPerfume(id, perfumeDTO);
+        return perfumePort.atualizaPerfume(id, perfumeDTO);
     }
 }
