@@ -1,9 +1,7 @@
 package com.github.joaoalves_dev.ApiLojaPerfume.ApiLojaPerfume.application.domain.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.github.joaoalves_dev.ApiLojaPerfume.ApiLojaPerfume.application.domain.enums.FuncionarioCargo;
+import jakarta.persistence.*;
 
 @Entity
 public class Funcionario {
@@ -11,18 +9,20 @@ public class Funcionario {
     @Id
     private String cpf;
     private String nome;
-    private String cargo;
+    @Enumerated(EnumType.STRING)
+    private FuncionarioCargo cargo;
     private String email;
 
-    public Funcionario() { }
+    //MINHA IDE ESTA COM ERRO LOMBOK
 
-    public Funcionario(String cpf, String nome, String cargo, String email) {
+    public Funcionario(){}
+
+    public Funcionario(String cpf, String email, String nome, FuncionarioCargo cargo) {
         this.cpf = cpf;
+        this.email = email;
         this.nome = nome;
         this.cargo = cargo;
-        this.email = email;
     }
-    //MINHA IDE NAO RECONHECE O LOMBOK
 
     public String getCpf() {
         return cpf;
@@ -40,11 +40,11 @@ public class Funcionario {
         this.nome = nome;
     }
 
-    public String getCargo() {
+    public FuncionarioCargo getCargo() {
         return cargo;
     }
 
-    public void setCargo(String cargo) {
+    public void setCargo(FuncionarioCargo cargo) {
         this.cargo = cargo;
     }
 

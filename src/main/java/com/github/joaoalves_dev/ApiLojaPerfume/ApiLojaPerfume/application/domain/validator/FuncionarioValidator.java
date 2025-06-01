@@ -1,5 +1,7 @@
 package com.github.joaoalves_dev.ApiLojaPerfume.ApiLojaPerfume.application.domain.validator;
 
+import com.github.joaoalves_dev.ApiLojaPerfume.ApiLojaPerfume.application.domain.enums.FuncionarioCargo;
+import com.github.joaoalves_dev.ApiLojaPerfume.ApiLojaPerfume.application.domain.exceptions.FuncionarioInvalidoException;
 import com.github.joaoalves_dev.ApiLojaPerfume.ApiLojaPerfume.application.domain.exceptions.RegistroDuplicadoException;
 import com.github.joaoalves_dev.ApiLojaPerfume.ApiLojaPerfume.application.domain.model.Funcionario;
 import com.github.joaoalves_dev.ApiLojaPerfume.ApiLojaPerfume.port.repository.FuncionarioRepository;
@@ -18,11 +20,18 @@ public class FuncionarioValidator {
         if (existeFuncionarioCadastrado(funcionario)) {
             throw new RegistroDuplicadoException("Funcionario já cadastrado!");
         }
+
+        if (!funcionario.getCargo().name().equalsIgnoreCase(FuncionarioCargo.ESTAGIARIO.name()) &&
+                !funcionario.getCargo().name().equalsIgnoreCase(FuncionarioCargo.VENDEDOR.name()) &&
+                !funcionario.getCargo().name().equalsIgnoreCase(FuncionarioCargo.GERENTE.name())) {
+            throw new FuncionarioInvalidoException("Cargo inválido! Valores válidos: ESTAGIARIO, VENDEDOR, GERENTE.");
+        }
+
     }
 
     private boolean existeFuncionarioCadastrado(Funcionario funcionario) {
-        Optional<Funcionario> funcionarioEncontrado = repository.findByCpfAndNomeAndCargoAndEmail(
-                funcionario.getCpf(), funcionario.getNome(), funcionario.getCargo(), funcionario.getEmail()
+        Optional<Funcionario> funcionarioEncontrado = repository.findByCpfAndNome(
+                funcionario.getCpf(), funcionario.getNome()
         );
 
         if(funcionarioEncontrado.isPresent()){

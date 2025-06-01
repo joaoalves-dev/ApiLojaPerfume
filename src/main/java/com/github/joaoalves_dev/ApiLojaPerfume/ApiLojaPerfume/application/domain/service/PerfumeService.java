@@ -7,6 +7,9 @@ import com.github.joaoalves_dev.ApiLojaPerfume.ApiLojaPerfume.application.domain
 import com.github.joaoalves_dev.ApiLojaPerfume.ApiLojaPerfume.port.repository.PerfumePort;
 import com.github.joaoalves_dev.ApiLojaPerfume.ApiLojaPerfume.port.repository.PerfumeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -29,9 +32,10 @@ public class PerfumeService implements PerfumePort {
 
 
     @Override
-    public ResponseEntity<Perfume> criaPerfume(PerfumeDTO perfumeDTO) {
+    public ResponseEntity<Perfume> criaPerfume(PerfumeDTO perfumeDTO, String id) {
         Perfume perfume = mapper.toEntity(perfumeDTO);
-        validator.validar(perfume);
+        validator.validaCadastro(perfume, id);
+
         return new ResponseEntity(repository.save(perfume), HttpStatus.CREATED);
     }
 
@@ -48,18 +52,18 @@ public class PerfumeService implements PerfumePort {
     }
 
     @Override
-    public ResponseEntity<List<PerfumeDTO>> buscaTodosPerfumes() {
-        List<Perfume> perfume = repository.findAll();
+    public ResponseEntity<Page<PerfumeDTO>> buscaTodosPerfumes(Integer pagina, Integer tamanhoPagina) {
 
-        List<PerfumeDTO> listaPerfumesDTOs = perfume.stream()
-                .map(mapper::toDTO)
-                .collect(Collectors.toList());
+        Pageable pageable = PageRequest.of(pagina,tamanhoPagina);
+        Page<Perfume> perfume = repository.findAll(pageable);
 
-        return new ResponseEntity(listaPerfumesDTOs, HttpStatus.OK);
+        Page<PerfumeDTO> resultado = perfume.map(mapper::toDTO);
+        return ResponseEntity.ok(resultado);
     }
 
     @Override
-    public ResponseEntity<Void> atualizaPerfume(String id, PerfumeDTO perfumeDTO) {
+    public ResponseEntity<Void> atualizaPerfume(String id, String cpfFuncionario, PerfumeDTO perfumeDTO) {
+        validator.validaAtualizarRegistro(cpfFuncionario);
         Optional<Perfume> resultado = repository.findById(id);
 
         if (!resultado.isPresent()) {
@@ -78,7 +82,8 @@ public class PerfumeService implements PerfumePort {
     }
 
     @Override
-    public ResponseEntity<Void> deletaPerfumeId(String id) {
+    public ResponseEntity<Void> deletaPerfumeId(String id, String cpfFuncionario) {
+        validator.validaExclusao(cpfFuncionario);
         Optional<Perfume> resultado = repository.findById(id);
 
         if (!resultado.isPresent()) {

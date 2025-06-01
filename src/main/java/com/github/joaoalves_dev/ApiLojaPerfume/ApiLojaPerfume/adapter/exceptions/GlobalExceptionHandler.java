@@ -30,17 +30,4 @@ public class GlobalExceptionHandler {
                 listaErros
         );
     }
-
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<ErroResposta> handleGlobalExceptions(Exception ex) {
-        ErroResposta errorResponse = new ErroResposta(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                ex.getMessage(),
-                List.of()
-        );
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
 }
